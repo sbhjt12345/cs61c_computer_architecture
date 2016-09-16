@@ -37,12 +37,13 @@
  * - None if successful
  */
 
+ //test github ..................................................
 int beargit_init(void) {
   fs_mkdir(".beargit");
 
   FILE* findex = fopen(".beargit/.index", "w");
   fclose(findex);
-  
+
   write_string_to_file(".beargit/.prev", "0000000000000000000000000000000000000000");
 
   return 0;
@@ -50,7 +51,7 @@ int beargit_init(void) {
 
 
 /* beargit add <filename>
- * 
+ *
  * - Append filename to list in .beargit/.index if it isn't in there yet
  *
  * Possible errors (to stderr):
@@ -89,7 +90,7 @@ int beargit_add(const char* filename) {
 
 
 /* beargit rm <filename>
- * 
+ *
  * See "Step 2" in the homework 1 spec.
  *
  */
