@@ -62,12 +62,12 @@ int beargit_init(void) {
  */
 
 int beargit_add(const char* filename) {
-  FILE* findex = fopen(".beargit/.index", "r");
-  FILE *fnewindex = fopen(".beargit/.newindex", "w");
+  FILE* findex = fopen(".beargit/.index", "r");     // read file
+  FILE *fnewindex = fopen(".beargit/.newindex", "w");   // file to write into
 
   char line[FILENAME_SIZE];
-  while(fgets(line, sizeof(line), findex)) {
-    strtok(line, "\n");
+  while(fgets(line, sizeof(line), findex)) {        // reads characters from findex and store them in line
+    strtok(line, "\n");   //split the line by new line
     if (strcmp(line, filename) == 0) {
       fprintf(stderr, "ERROR: File %s already added\n", filename);
       fclose(findex);
@@ -76,7 +76,7 @@ int beargit_add(const char* filename) {
       return 3;
     }
 
-    fprintf(fnewindex, "%s\n", line);
+    fprintf(fnewindex, "%s\n", line);  //write the new files into fnewindex
   }
 
   fprintf(fnewindex, "%s\n", filename);
@@ -97,8 +97,28 @@ int beargit_add(const char* filename) {
 
 int beargit_rm(const char* filename) {
   /* COMPLETE THE REST */
+  FILE* findex = fopen(".beargit/.index","r");
+  FILE* fnewindex = fopen(".beargit/.newindex","w");
+  char line[FILENAME_SIZE];
+  int counter = 0;
+  while (fgets(line,sizeof(line),findex)){
+    strtok(line,"\n");
+    if (strcmp(line,filename)!=0){
+        fprintf(fnewindex,"%s\n",line);
+    }
+    else counter++;
+  }
 
-
+  if (counter==0){
+    fprintf(stderr,"ERROR: File %s not tracked\n",filename);
+    fclose(findex);
+    fclose(fnewindex);
+    fs_rm(".beargit/.newindex");
+    return 1;
+  }
+  fclose(findex);
+  fclose(fnewindex);
+  fs_mv(".beargit/.newindex", ".beargit/.index");   //replace the index with newindex?
   return 0;
 }
 
@@ -112,11 +132,28 @@ const char* go_bears = "GO BEARS!";
 
 int is_commit_msg_ok(const char* msg) {
   /* COMPLETE THE REST */
+  int i = 0,j=0;
+  while ((*(msg+i)!='\0')&& (*(go_bears+j))!='\0'){
+        if ( *(msg+i) != *(go_bears+j)){
+            i++;
+            j=0;
+        }
+        else {
+            i++;
+            j++;
+        }
+    }
+     if ( *(go_bears+j)=='\0') return 0;
+     else return 1;
+
   return 0;
 }
 
 void next_commit_id(char* commit_id) {
   /* COMPLETE THE REST */
+  char current_branch[BRANCHNAME_SIZE];
+  read_string_from_file(".beargit/.current_branch", current_branch, BRANCHNAME_SIZE);
+
 }
 
 int beargit_commit(const char* msg) {
@@ -124,6 +161,7 @@ int beargit_commit(const char* msg) {
     fprintf(stderr, "ERROR: Message must contain \"%s\"\n", go_bears);
     return 1;
   }
+
 
   char commit_id[COMMIT_ID_SIZE];
   read_string_from_file(".beargit/.prev", commit_id, COMMIT_ID_SIZE);
